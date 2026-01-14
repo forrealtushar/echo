@@ -11,7 +11,7 @@ const app = express()
 
 // 1. UPDATED CORS: Add your deployed frontend URL here later
 app.use(cors({
-    origin: ["http://localhost:5173", "https://echo-57tn.onrender.com"],
+    origin: ["http://localhost:5173", "https://echo-1-zioj.onrender.com"],
     credentials: true,
 }))
 app.use(express.json())
@@ -40,7 +40,7 @@ const server = app.listen(PORT, () => {
 // 3. SOCKET.IO SETUP
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173", "https://echo-57tn.onrender.com"],
+        origin: ["http://localhost:5173", "https://echo-1-zioj.onrender.com"],
         credentials: true,
     },
 });
