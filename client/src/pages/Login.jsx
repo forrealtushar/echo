@@ -20,39 +20,40 @@ export default function Login() {
     style: { background: "#000", color: "#fff", border: "1px solid #333" }
   };
 
-  // If user is already logged in, redirect to Chat
+  // Redirect if already logged in
   useEffect(() => {
     if (localStorage.getItem("chat-app-user")) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
-      const { password, username } = values;
-      
-      const { data } = await axios.post("http://localhost:3000/api/auth/login", {
-        username,
-        password,
-      });
+      try {
+        const { password, username } = values;
+        
+        const { data } = await axios.post("http://localhost:3000/api/auth/login", {
+          username,
+          password,
+        });
 
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate("/");
+        if (data.status === false) {
+          toast.error(data.msg, toastOptions);
+        }
+        if (data.status === true) {
+          localStorage.setItem("chat-app-user", JSON.stringify(data.user));
+          navigate("/");
+        }
+      } catch (error) {
+        toast.error("Error connecting to server.", toastOptions);
       }
     }
   };
 
   const handleValidation = () => {
     const { password, username } = values;
-    if (password === "") {
-      toast.error("Username and Password are required.", toastOptions);
-      return false;
-    } else if (username.length === "") {
+    if (password === "" || username === "") {
       toast.error("Username and Password are required.", toastOptions);
       return false;
     }
@@ -66,7 +67,6 @@ export default function Login() {
   return (
     <>
       <div className="h-screen w-screen flex flex-col justify-center items-center bg-black">
-        
         <div className="w-full max-w-sm px-4">
           
           <div className="flex flex-col items-start mb-12">
@@ -74,24 +74,24 @@ export default function Login() {
             <p className="text-zinc-500 text-sm">Login to your account.</p>
           </div>
 
-          <form onSubmit={(event) => handleSubmit(event)} className="flex flex-col gap-6">
-            
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
-                <input
+              <input
                 type="text"
                 placeholder="Username"
                 name="username"
-                onChange={(e) => handleChange(e)}
+                onChange={handleChange}
+                autoComplete="off"
                 className="bg-black text-white px-0 py-3 border-b border-zinc-800 focus:outline-none focus:border-white transition-colors placeholder-zinc-600 w-full"
-                />
-                
-                <input
+              />
+              
+              <input
                 type="password"
                 placeholder="Password"
                 name="password"
-                onChange={(e) => handleChange(e)}
+                onChange={handleChange}
                 className="bg-black text-white px-0 py-3 border-b border-zinc-800 focus:outline-none focus:border-white transition-colors placeholder-zinc-600 w-full"
-                />
+              />
             </div>
             
             <button 
@@ -100,7 +100,6 @@ export default function Login() {
             >
               Log In
             </button>
-
           </form>
 
           <div className="mt-8 text-zinc-600 text-sm">
@@ -109,7 +108,6 @@ export default function Login() {
               Sign Up
             </Link>
           </div>
-
         </div>
       </div>
       <ToastContainer />

@@ -19,27 +19,32 @@ export default function Register() {
     autoClose: 5000,
     hideProgressBar: true,
     theme: "dark",
-    // Custom styling for the toast to match the black/white theme
     style: { background: "#000", color: "#fff", border: "1px solid #333" }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
-      const { password, username, email } = values;
-      
-      const { data } = await axios.post("http://localhost:3000/api/auth/register", {
-        username,
-        email,
-        password,
-      });
+      try {
+        const { password, username, email } = values;
+        
+        // Ensure this matches your server port (3000)
+        const { data } = await axios.post("http://localhost:3000/api/auth/register", {
+          username,
+          email,
+          password,
+        });
 
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate("/");
+        if (data.status === false) {
+          toast.error(data.msg, toastOptions);
+        }
+        if (data.status === true) {
+          localStorage.setItem("chat-app-user", JSON.stringify(data.user));
+          // Navigating straight to Chat
+          navigate("/");
+        }
+      } catch (error) {
+        toast.error("Could not connect to the server.", toastOptions);
       }
     }
   };
@@ -50,10 +55,13 @@ export default function Register() {
       toast.error("Passwords do not match.", toastOptions);
       return false;
     } else if (username.length < 3) {
-      toast.error("Username is too short.", toastOptions);
+      toast.error("Username must be at least 3 characters.", toastOptions);
       return false;
     } else if (password.length < 8) {
-      toast.error("Password must be 8+ characters.", toastOptions);
+      toast.error("Password must be at least 8 characters.", toastOptions);
+      return false;
+    } else if (email === "") {
+      toast.error("Email is required.", toastOptions);
       return false;
     }
     return true;
@@ -66,49 +74,44 @@ export default function Register() {
   return (
     <>
       <div className="h-screen w-screen flex flex-col justify-center items-center bg-black">
-        
         <div className="w-full max-w-sm px-4">
-          
           <div className="flex flex-col items-start mb-12">
             <h1 className="text-white text-4xl font-semibold tracking-tighter mb-2">echo.</h1>
             <p className="text-zinc-500 text-sm">Create an account to continue.</p>
           </div>
 
-          <form onSubmit={(event) => handleSubmit(event)} className="flex flex-col gap-6">
-            
-            {/* Grouping inputs with specific styling */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
-                <input
+              <input
                 type="text"
                 placeholder="Username"
                 name="username"
-                onChange={(e) => handleChange(e)}
+                autoComplete="off"
+                onChange={handleChange}
                 className="bg-black text-white px-0 py-3 border-b border-zinc-800 focus:outline-none focus:border-white transition-colors placeholder-zinc-600 w-full"
-                />
-                
-                <input
+              />
+              <input
                 type="email"
                 placeholder="Email"
                 name="email"
-                onChange={(e) => handleChange(e)}
+                autoComplete="off"
+                onChange={handleChange}
                 className="bg-black text-white px-0 py-3 border-b border-zinc-800 focus:outline-none focus:border-white transition-colors placeholder-zinc-600 w-full"
-                />
-                
-                <input
+              />
+              <input
                 type="password"
                 placeholder="Password"
                 name="password"
-                onChange={(e) => handleChange(e)}
+                onChange={handleChange}
                 className="bg-black text-white px-0 py-3 border-b border-zinc-800 focus:outline-none focus:border-white transition-colors placeholder-zinc-600 w-full"
-                />
-                
-                <input
+              />
+              <input
                 type="password"
                 placeholder="Confirm Password"
                 name="confirmPassword"
-                onChange={(e) => handleChange(e)}
+                onChange={handleChange}
                 className="bg-black text-white px-0 py-3 border-b border-zinc-800 focus:outline-none focus:border-white transition-colors placeholder-zinc-600 w-full"
-                />
+              />
             </div>
             
             <button 
@@ -117,7 +120,6 @@ export default function Register() {
             >
               Sign Up
             </button>
-
           </form>
 
           <div className="mt-8 text-zinc-600 text-sm">
@@ -126,7 +128,6 @@ export default function Register() {
               Log in
             </Link>
           </div>
-
         </div>
       </div>
       <ToastContainer />
