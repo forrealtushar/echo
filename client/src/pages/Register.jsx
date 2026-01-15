@@ -28,7 +28,6 @@ export default function Register() {
       try {
         const { password, username, email } = values;
         
-        // Ensure this matches your server port (3000)
         const { data } = await axios.post("http://localhost:3000/api/auth/register", {
           username,
           email,
@@ -40,7 +39,7 @@ export default function Register() {
         }
         if (data.status === true) {
           localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-          // Navigating straight to Chat
+        
           navigate("/");
         }
       } catch (error) {
