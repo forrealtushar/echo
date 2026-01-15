@@ -29,7 +29,7 @@ export default function Chat() {
   // 2. Initialize Socket
   useEffect(() => {
     if (currentUser) {
-      socket.current = io("http://localhost:3000");
+      socket.current = io(import.meta.env.VITE_API_URL);
       socket.current.emit("add-user", currentUser._id);
       console.log("Socket connected for:", currentUser.username);
     }
@@ -39,7 +39,7 @@ export default function Chat() {
   useEffect(() => {
     const getContacts = async () => {
       if (currentUser) {
-        const { data } = await axios.get(`http://localhost:3000/api/auth/allusers/${currentUser._id}`);
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/allusers/${currentUser._id}`);
         setContacts(data);
       }
     };
