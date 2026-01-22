@@ -27,6 +27,14 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:"",
     },
+    isOnline:{
+        type:Boolean,
+        default:false,
+    },
+    lastSeen:{
+        type:Date,
+        default: Date.now
+    },
 })
 
 export default mongoose.model("Users",userSchema)

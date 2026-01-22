@@ -4,13 +4,13 @@ import ChatInput from "./ChatInput";
 import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 
-// 1. Destructure setCurrentChat from props
 export default function ChatContainer({ currentChat, currentUser, socket, setCurrentChat }) {
   const [messages, setMessages] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [isRemoteUserTyping, setIsRemoteUserTyping] = useState(false); // Renamed for clarity
   const scrollRef = useRef();
 
-  // Fetch History
+  // 1. Fetch History
   useEffect(() => {
     const fetchMessages = async () => {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/messages/getmsg`, {
@@ -22,9 +22,8 @@ export default function ChatContainer({ currentChat, currentUser, socket, setCur
     if (currentChat) fetchMessages();
   }, [currentChat, currentUser]);
 
-  // Send Message
+  // 2. Send Message
   const handleSendMsg = async (msg) => {
-    // FIX: Changed endpoint from getmsg to addmsg
     await axios.post(`${import.meta.env.VITE_API_URL}/api/messages/addmsg`, {
       from: currentUser._id,
       to: currentChat._id,
@@ -40,7 +39,7 @@ export default function ChatContainer({ currentChat, currentUser, socket, setCur
     setMessages((prev) => [...prev, { fromSelf: true, message: msg }]);
   };
 
-  // Socket Listener
+  // 3. Socket Listener for Incoming Messages
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-recieve", (msg) => {
@@ -52,24 +51,54 @@ export default function ChatContainer({ currentChat, currentUser, socket, setCur
     };
   }, [socket]);
 
-  // Handle Arrival
+  // 4. Socket Listeners for Typing Indicator
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("typing", (data) => {
+        if (currentChat._id === data.from) {
+          setIsRemoteUserTyping(true);
+        }
+      });
+      socket.current.on("stop-typing", (data) => {
+        if (currentChat._id === data.from) {
+          setIsRemoteUserTyping(false);
+        }
+      });
+    }
+    return () => {
+      if (socket.current) {
+        socket.current.off("typing");
+        socket.current.off("stop-typing");
+      }
+    };
+  }, [currentChat, socket]);
+
+  // 5. Handle Message Arrival & Auto Scroll
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage]);
 
-  // Auto Scroll
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Helper function to format Last Seen time
+  const formatLastSeen = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       
-      {/* HEADER - Updated for responsiveness */}
+      {/* HEADER */}
       <div className="flex justify-between items-center p-4 md:p-6 border-b border-zinc-800 bg-zinc-900/50 shrink-0">
         <div className="flex items-center gap-3 md:gap-4">
           
-          {/* 2. MOBILE BACK BUTTON: Only visible on small screens (hidden on md) */}
+          {/* Back Button (Mobile) */}
           <button 
             onClick={() => setCurrentChat(undefined)} 
             className="md:hidden text-white hover:text-zinc-400 transition-colors"
@@ -79,17 +108,39 @@ export default function ChatContainer({ currentChat, currentUser, socket, setCur
             </svg>
           </button>
 
+          {/* Avatar */}
           <div className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center font-bold shrink-0">
             {currentChat.username[0].toUpperCase()}
           </div>
-          <h3 className="font-bold text-lg tracking-tight truncate max-w-[150px] md:max-w-none">
-            {currentChat.username}
-          </h3>
+
+          {/* User Info & Dynamic Status */}
+         <div className="flex flex-col">
+  <h3 className="font-bold text-lg tracking-tight leading-tight">
+    {currentChat.username}
+  </h3>
+  
+  <p className="text-[10px] md:text-xs font-medium">
+    {isRemoteUserTyping ? (
+      // Typing is now grey
+      <span className="text-zinc-500 italic">typing...</span>
+    ) : currentChat.isOnline ? (
+      // Online stays green
+      <span className="text-green-500">Online</span>
+    ) : currentChat.lastSeen ? (
+      // Last seen is grey
+      <span className="text-zinc-500">
+        Last seen at {formatLastSeen(currentChat.lastSeen)}
+      </span>
+    ) : (
+      ""
+    )}
+  </p>
+</div>
         </div>
         <Logout socket={socket} />
       </div>
 
-      {/* MESSAGES - Updated padding for mobile */}
+      {/* MESSAGES */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 hide-scrollbar">
         {messages.map((message) => (
           <div ref={scrollRef} key={uuidv4()}>
@@ -106,9 +157,13 @@ export default function ChatContainer({ currentChat, currentUser, socket, setCur
         ))}
       </div>
 
-      {/* INPUT - Fixed */}
       <div className="shrink-0 bg-zinc-950 p-2 md:p-0">
-        <ChatInput handleSendMsg={handleSendMsg} />
+        <ChatInput 
+          handleSendMsg={handleSendMsg} 
+          socket={socket} 
+          currentChat={currentChat} 
+          currentUser={currentUser} 
+        />
       </div>
     </div>
   );

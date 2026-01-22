@@ -60,6 +60,8 @@ export const getAllUsers = async (req, res, next) => {
       "email",
       "username",
       "_id",
+      "isOnline",
+      "lastSeen"
     ]);
     return res.json(users);
   } catch (ex) {
