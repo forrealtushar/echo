@@ -1,27 +1,25 @@
-Echo | MERN Chat App
-A real-time messaging platform built to handle instant communication with a focus on speed and security.
+Echo
+A full-stack, real-time messaging platform. Live Demo - https://echo-1-zioj.onrender.com/login
 
-✨ Key Features
-Real-time Chat: Powered by Socket.io for zero-latency messaging.
+Overview
+Echo is a real-time communication tool built with the MERN stack. It leverages WebSockets for instant data transfer and provides a secure, responsive environment for users to connect.
 
-Auth: Secure login/signup using JWT and Bcrypt.
-
-Active Status: Real-time "Online/Offline" user tracking.
-
-Responsive UI: Styled with Tailwind CSS for all device sizes.
-
-🛠️ Tech Stack
+Tech Stack
 Frontend: React, Tailwind CSS, Zustand
 
 Backend: Node.js, Express.js
 
-Database: MongoDB
+Database: MongoDB (Mongoose)
 
-Real-time: Socket.io
+Real-Time: Socket.io
 
-🚀 Quick Start
-Clone & Install: npm install in both root and frontend folders.
+Storage: Cloudinary (for media/avatars)
 
-Env Setup: Add MONGODB_URI, JWT_SECRET, and PORT to a .env file.
+Core Features
+Bi-directional Messaging: Real-time chat updates without page refreshes.
 
-Run: npm run dev
+Secure Authentication: JWT-based login with encrypted password storage.
+
+Live Presence: Real-time tracking of online/offline user status.
+
+Adaptive Design: Optimized for seamless use across mobile and desktop.
