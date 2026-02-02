@@ -21,3 +21,12 @@ Secure Authentication: JWT-based login with encrypted password storage.
 Live Presence: Real-time tracking of online/offline user status.
 
 Adaptive Design: Optimized for seamless use across mobile and desktop.
+
+Screenshots:
+
+<img width="1920" height="1080" alt="Screenshot (6)" src="https://github.com/user-attachments/assets/8c476caa-98b6-4dab-9dae-3cbf2da80641" />
+
+<img width="1920" height="1080" alt="Screenshot (7)" src="https://github.com/user-attachments/assets/1711f210-e50a-4bec-a930-8b6711e3ef56" />
+
+
+
