@@ -1,5 +1,5 @@
 Echo
-A full-stack, real-time messaging platform. Live Demo - https://echo-1-zioj.onrender.com/login
+A full-stack, real-time messaging platform. Live Demo - https://echo-1-zioj.onrender.com/
 
 Overview
 Echo is a real-time communication tool built with the MERN stack. It leverages WebSockets for instant data transfer and provides a secure, responsive environment for users to connect.
