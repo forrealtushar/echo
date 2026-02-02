@@ -13,8 +13,6 @@ Database: MongoDB (Mongoose)
 
 Real-Time: Socket.io
 
-Storage: Cloudinary (for media/avatars)
-
 Core Features
 Bi-directional Messaging: Real-time chat updates without page refreshes.
 
